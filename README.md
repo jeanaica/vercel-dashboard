@@ -34,10 +34,12 @@ To install and run the Vercel Environment Variable Manager, follow these steps:
 
 4. Create a .env file in the root directory of the project and populate it with the following environment variables:
 
+   ```
    VITE_PROJ_ID=[Your Vercel Project ID]
    VITE_ACCESS_TOKEN=[Your Vercel Access Token]
    VITE_VERCEL_ID=[Your Vercel User or Team ID]
    VITE_VERCEL_ENDPOINT=https://api.vercel.com/v9/projects
+   ```
 
    Replace the bracketed values with your actual Vercel project ID, access token, and user/team ID.
 
