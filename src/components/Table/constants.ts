@@ -17,4 +17,14 @@ export const defaultState: TableContextProps = {
   setIsTableLoading: NOOP,
   isFilterLoading: false,
   setIsFilterLoading: NOOP,
+  batchSuccessMessage: {
+    type: MessageEnum.Success,
+    text: '',
+  },
+  setBatchSuccessMessage: NOOP,
+  batchFailedMessage: {
+    type: MessageEnum.Error,
+    text: '',
+  },
+  setBatchFailedMessage: NOOP,
 };

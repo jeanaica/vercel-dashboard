@@ -10,20 +10,26 @@ import { useTableContext } from '../../../components/Table/context';
 import { EnvVarTableItem } from '../types';
 import TableActions from './TableActions';
 import DeleteModal from './DeleteModal';
+import DeleteProcessModal from './DeleteProcessModal';
 
 const EnvVarTable: FC = () => {
   const [tableData, setTableData] = useState<EnvVarTableItem[]>([]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isDeleteLoading, setIsDeleteLoading] = useState(false);
+  const [isDeleteLoadingOpen, setIsDeleteLoadingOpen] = useState(false);
 
   const {
     selectedIds,
     setSelectedIds,
+    filters,
     selectedFilter,
     setSelectedFilter,
     setIsFilterLoading,
     setIsTableLoading,
     setMessage,
     setFilters,
+    setBatchSuccessMessage,
+    setBatchFailedMessage,
   } = useTableContext();
 
   const handleFilterOptions = useCallback(async () => {
@@ -55,32 +61,31 @@ const EnvVarTable: FC = () => {
     setIsFilterLoading(false);
   }, []);
 
-  const handleTableData = useCallback(
-    async (branch: string) => {
-      if (selectedFilter) {
-        setIsTableLoading(true);
+  const handleTableData = async (branch: string) => {
+    if (selectedFilter) {
+      setIsTableLoading(true);
 
-        try {
-          const response = await fetchEnvironment({ gitBranch: branch });
+      try {
+        const response = await fetchEnvironment({ gitBranch: branch });
 
-          setTableData(response as EnvVarTableItem[]);
-        } catch (error) {
-          if (error instanceof Error) {
-            setMessage({
-              type: MessageEnum.Error,
-              text: error.message,
-            });
-          }
-        } finally {
-          setIsTableLoading(false);
+        setTableData(response as EnvVarTableItem[]);
+      } catch (error) {
+        if (error instanceof Error) {
+          setMessage({
+            type: MessageEnum.Error,
+            text: error.message,
+          });
         }
+      } finally {
+        setIsTableLoading(false);
       }
-    },
-    [selectedFilter]
-  );
+    }
+  };
 
   const handleRefetch = async () => {
-    await handleTableData(selectedFilter);
+    setSelectedFilter(filters[0].value);
+
+    await handleTableData(filters[0].value);
   };
 
   const handleConfirmDelete = useCallback(async () => {
@@ -89,28 +94,55 @@ const EnvVarTable: FC = () => {
       return;
     }
 
-    setIsTableLoading(true);
-    setIsModalOpen(false);
+    setIsDeleteModalOpen(false);
+    setIsDeleteLoadingOpen(true);
+    setIsDeleteLoading(true);
+    setBatchSuccessMessage({
+      type: MessageEnum.Success,
+      text: '',
+      list: [],
+    });
+    setBatchFailedMessage({
+      type: MessageEnum.Error,
+      text: '',
+      list: [],
+    });
 
-    try {
-      await Promise.all(selectedIds.map((id) => deleteEnvVariable(id)));
-      setMessage({
+    const deletionResults = await Promise.allSettled(
+      ['asdas'].map((id) => deleteEnvVariable(id))
+    );
+
+    const successfulDeletions = deletionResults
+      .filter((result) => result.status === 'fulfilled')
+      .map((result) => (result as PromiseFulfilledResult<string>).value);
+
+    const failedDeletions = deletionResults
+      .filter((result) => result.status === 'rejected')
+      .map((result) => (result as PromiseRejectedResult).reason.message);
+
+    if (successfulDeletions.length > 0) {
+      setBatchSuccessMessage({
         type: MessageEnum.Success,
-        text: 'All selected items deleted successfully',
+        text: `${successfulDeletions.length} items deleted successfully`,
+        list: successfulDeletions,
       });
-    } catch (error) {
-      setMessage({
-        type: MessageEnum.Error,
-        text: 'Error deleting items',
-      });
-    } finally {
-      setSelectedIds([]);
-      void handleTableData(selectedFilter);
     }
-  }, [selectedIds]);
+
+    if (failedDeletions.length > 0) {
+      setBatchFailedMessage({
+        type: MessageEnum.Error,
+        text: `${failedDeletions.length} items failed to delete`,
+        list: failedDeletions,
+      });
+    }
+
+    setSelectedIds([]);
+    setIsDeleteLoading(false);
+    void handleTableData(selectedFilter);
+  }, [selectedIds, selectedFilter]);
 
   const handleDelete = () => {
-    setIsModalOpen(true);
+    setIsDeleteModalOpen(true);
   };
 
   useEffect(() => {
@@ -128,9 +160,14 @@ const EnvVarTable: FC = () => {
       <Table<EnvVarTableItem> data={tableData} />
       <DeleteModal
         tableData={tableData}
-        isModalOpen={isModalOpen}
-        setIsModalOpen={setIsModalOpen}
+        isModalOpen={isDeleteModalOpen}
+        setIsModalOpen={setIsDeleteModalOpen}
         onButtonClick={handleConfirmDelete}
+      />
+      <DeleteProcessModal
+        isLoading={isDeleteLoading}
+        isModalOpen={isDeleteLoadingOpen}
+        setIsModalOpen={setIsDeleteLoadingOpen}
       />
     </div>
   );

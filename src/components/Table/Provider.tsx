@@ -17,6 +17,14 @@ export function TableProvider({ children }: ProviderProps) {
   });
   const [isTableLoading, setIsTableLoading] = useState<boolean>(false);
   const [isFilterLoading, setIsFilterLoading] = useState<boolean>(false);
+  const [batchSuccessMessage, setBatchSuccessMessage] = useState<MessageType>({
+    type: MessageEnum.Success,
+    text: '',
+  });
+  const [batchFailedMessage, setBatchFailedMessage] = useState<MessageType>({
+    type: MessageEnum.Error,
+    text: '',
+  });
 
   const providerValue: TableContextProps = {
     selectedIds,
@@ -31,6 +39,10 @@ export function TableProvider({ children }: ProviderProps) {
     setIsTableLoading,
     isFilterLoading,
     setIsFilterLoading,
+    batchSuccessMessage,
+    setBatchSuccessMessage,
+    batchFailedMessage,
+    setBatchFailedMessage,
   };
 
   return (

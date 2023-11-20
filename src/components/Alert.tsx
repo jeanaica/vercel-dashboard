@@ -4,9 +4,10 @@ import { MessageEnum } from './Table/types';
 type Props = {
   message: string;
   type?: MessageEnum;
+  list?: string[];
 };
 
-const Alert: FC<Props> = ({ message, type = MessageEnum.Info }) => {
+const Alert: FC<Props> = ({ message, type = MessageEnum.Info, list }) => {
   const infoStyle = type === MessageEnum.Info && 'bg-blue-300';
   const errorStyle = type === MessageEnum.Error && 'bg-red-300';
   const successStyle =
@@ -25,6 +26,17 @@ const Alert: FC<Props> = ({ message, type = MessageEnum.Info }) => {
         }`}
       >
         <div className=''>{msg}</div>
+        {list && list.length > 0 && (
+          <ul className='px-4 list-disc overflow-y-auto max-h-[500px] break-words'>
+            {list.map((item, i) => {
+              return (
+                <li key={i} className='p-4'>
+                  {item}
+                </li>
+              );
+            })}
+          </ul>
+        )}
       </div>
     </>
   );

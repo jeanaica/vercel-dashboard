@@ -10,6 +10,12 @@ export enum MessageEnum {
 export type MessageType = {
   type: MessageEnum;
   text: string;
+  list?: string[];
+};
+
+export type DeleteResponse = {
+  status: 'fulfilled' | 'rejected';
+  value: string;
 };
 
 export type TableContextProps = {
@@ -21,6 +27,10 @@ export type TableContextProps = {
   setSelectedFilter: (selectedFilter: string) => void;
   message: MessageType;
   setMessage: (params: MessageType) => void;
+  batchSuccessMessage: MessageType;
+  setBatchSuccessMessage: (params: MessageType) => void;
+  batchFailedMessage: MessageType;
+  setBatchFailedMessage: (params: MessageType) => void;
   isTableLoading: boolean;
   setIsTableLoading: Dispatch<SetStateAction<boolean>>;
   isFilterLoading: boolean;

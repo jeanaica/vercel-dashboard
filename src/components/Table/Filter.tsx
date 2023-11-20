@@ -9,7 +9,8 @@ type Props = {
 };
 
 const Filter: FC<Props> = ({ searchTerm, setSearchTerm }) => {
-  const { filters, setSelectedFilter, isFilterLoading } = useTableContext();
+  const { filters, selectedFilter, setSelectedFilter, isFilterLoading } =
+    useTableContext();
 
   const handleOnChange = (e: ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
@@ -28,6 +29,7 @@ const Filter: FC<Props> = ({ searchTerm, setSearchTerm }) => {
         name='gitBranch'
         label='Git Branch'
         options={filters}
+        selectedValue={selectedFilter}
         setValue={setSelectedFilter}
         isLoading={isFilterLoading}
       />

@@ -44,7 +44,7 @@ const DeleteModal: FC<Props> = ({
     >
       <div>
         Are you sure you want to delete these items?
-        <ul className='p-4 list-disc'>
+        <ul className='p-4 list-disc overflow-y-auto max-h-[500px] break-words'>
           {selectedIds.map((id) => {
             const foundObject = tableData.find((obj) => obj.id === id);
 

@@ -10,6 +10,11 @@ export const fetchEnvironment = async (
       params: {
         gitBranch: params.gitBranch,
         source: 'vercel-cli:pull',
+        teamId: `${
+          import.meta.env.VITE_PERSONAL
+            ? undefined
+            : import.meta.env.VITE_VERCEL_ID
+        }`,
       },
     }
   );
@@ -25,18 +30,29 @@ export const fetchEnvironmentBranches = async (): Promise<
     {
       params: {
         target: 'preview',
+        teamId: `${
+          import.meta.env.VITE_PERSONAL
+            ? undefined
+            : import.meta.env.VITE_VERCEL_ID
+        }`,
       },
     }
   );
 
-  const items = response.data.envs.map((env: EnvVarResponse) => env.gitBranch);
+  const items = response.data.envs
+    .map((env: EnvVarResponse) => env.gitBranch)
+    .filter((item) => item);
 
   return [...new Set(items)];
 };
 
 export const deleteEnvVariable = async (id: string): Promise<string> => {
   try {
-    await axiosInstance.delete(`/env/${id}`);
+    const deleteUrl = import.meta.env.VITE_PERSONAL
+      ? `/env/${id}`
+      : `/env/${id}?teamId=${import.meta.env.VITE_VERCEL_ID}`;
+
+    await axiosInstance.delete(`${deleteUrl}`);
 
     return id;
   } catch (error) {

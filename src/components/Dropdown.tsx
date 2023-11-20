@@ -8,9 +8,17 @@ type Props = {
   options: DropdownItem[];
   name: string;
   label: string;
+  selectedValue?: string;
 };
 
-const Dropdown: FC<Props> = ({ setValue, isLoading, options, name, label }) => {
+const Dropdown: FC<Props> = ({
+  setValue,
+  selectedValue = '',
+  isLoading,
+  options,
+  name,
+  label,
+}) => {
   const handleSelectChange = (event: ChangeEvent<HTMLSelectElement>) => {
     event.preventDefault();
 
@@ -23,6 +31,7 @@ const Dropdown: FC<Props> = ({ setValue, isLoading, options, name, label }) => {
       <select
         disabled={isLoading}
         onChange={handleSelectChange}
+        value={selectedValue}
         className='py-3 px-5 w-[200px] text-center border border-gray-300 rounded focus:bg-none cursor-pointer'
       >
         {options.map((option, index) => (

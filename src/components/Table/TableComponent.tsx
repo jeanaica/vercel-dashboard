@@ -178,7 +178,7 @@ const TableComponent = <T extends Record<string, string | boolean | number>>({
                 return (
                   <td
                     key={cell.id}
-                    className='p-2 border-spacing border-zinc-400 border'
+                    className='p-2 border-spacing border-zinc-400 border overflow-hidden whitespace-nowrap overflow-ellipsis max-w-[100px]'
                   >
                     {cell.column.id === 'selection' ? (
                       <input
