@@ -109,7 +109,7 @@ const EnvVarTable: FC = () => {
     });
 
     const deletionResults = await Promise.allSettled(
-      ['asdas'].map((id) => deleteEnvVariable(id))
+      selectedIds.map((id) => deleteEnvVariable(id))
     );
 
     const successfulDeletions = deletionResults
@@ -118,7 +118,8 @@ const EnvVarTable: FC = () => {
 
     const failedDeletions = deletionResults
       .filter((result) => result.status === 'rejected')
-      .map((result) => (result as PromiseRejectedResult).reason.message);
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
+      .map((result) => (result as PromiseRejectedResult)?.reason?.message);
 
     if (successfulDeletions.length > 0) {
       setBatchSuccessMessage({
